@@ -23,8 +23,8 @@ Lexer::Lexer() {
     automata.push_back(new MatcherAutomaton("Queries", QUERIES));
     automata.push_back(new IDAutomaton());
     automata.push_back(new StringAutomaton());
-    automata.push_back(new CommentAutomaton());
     automata.push_back(new BlockCommentAutomaton());
+    automata.push_back(new CommentAutomaton());
 
     // ID, STRING, COMMENT, EOF?
     /*

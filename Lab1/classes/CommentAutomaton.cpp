@@ -7,7 +7,8 @@ CommentAutomaton::CommentAutomaton(TokenType type)
 
 size_t CommentAutomaton::Start(const std::string& input) {
     this->inputRead = 0;
-    if (input[0] == '#') {
+    // Line starts with #, but is NOT #| (denoting a block comment)
+    if (input[0] == '#' && input[1] != '|') {
         while (input[inputRead] != '\n' && input[inputRead]) {
             inputRead++;
         }
