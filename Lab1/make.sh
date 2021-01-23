@@ -1,0 +1,1 @@
+g++ -Wall -Werror -std=c++17 -g classes/*.cpp main.cpp -o scanner
