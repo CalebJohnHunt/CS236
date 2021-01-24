@@ -25,12 +25,15 @@ Lexer::Lexer() {
     automata.push_back(new StringAutomaton());
     automata.push_back(new BlockCommentAutomaton());
     automata.push_back(new CommentAutomaton());
+}
 
-    // ID, STRING, COMMENT, EOF?
-    /*
-    automata.push_back(new ColonAutomaton());
-    automata.push_back(new ColonDashAutomaton());
-    */
+Lexer::~Lexer() {
+    for (auto a : tokens) {
+        delete a;
+    }
+    for (auto a : automata) {
+        delete a;
+    }
 }
 
 void Lexer::Run(std::string input) {

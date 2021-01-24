@@ -16,6 +16,7 @@
 class Lexer {
 public:
     Lexer();
+    ~Lexer();
     void Run(std::string input);
 
 // private:

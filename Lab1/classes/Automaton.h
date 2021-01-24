@@ -7,6 +7,7 @@
 class Automaton {
 public:
     Automaton(TokenType type);
+    virtual ~Automaton() {};
 
     virtual size_t Start(const std::string& input) = 0;
     Token* CreateToken(std::string input, size_t lineNumber);
