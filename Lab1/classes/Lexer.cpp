@@ -66,13 +66,26 @@ void Lexer::Run(std::string input) {
         }
         else {
             maxRead = 1;
-            // Token *newToken = new InvalidToken(std::string(1, input[0]), lineNumber);
-            tokens.push_back(new Token(UNDEFINED, input[0], lineNumber));
+            tokens.push_back(new Token(UNDEFINED, std::string(1, input[0]), lineNumber));
         }
-        // input = input.substr(maxRead, input.size());
         input.erase(0, maxRead);
     }
 
     // Add EOF token
     tokens.push_back(new Token(END, "", lineNumber));
+}
+
+void Lexer::Print() {
+    // Convert enum TokenType to appropriate string (see Token.h)
+    char const *TokenTypeArr[] = {
+        "COMMA", "PERIOD", "Q_MARK", "LEFT_PAREN", "RIGHT_PAREN", "COLON", "COLON_DASH",
+        "MULTIPLY", "ADD", "SCHEMES", "FACTS", "RULES", "QUERIES", "ID", "STRING",
+        "COMMENT", "UNDEFINED", "EOF"
+        };
+    
+    for (Token* T : tokens) {
+        std::cout << '(' << TokenTypeArr[T->type] << ",\"" << T->name << "\"," << T->lineNumber << ')' << std::endl;
+    }
+
+    std::cout << "Total Tokens = " << tokens.size();
 }

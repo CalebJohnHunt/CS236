@@ -17,8 +17,9 @@ public:
     Lexer();
     ~Lexer();
     void Run(std::string input);
+    void Print();
 
-// private:
+private:
     std::vector<Token*> tokens;
     std::vector<Automaton*> automata;
 

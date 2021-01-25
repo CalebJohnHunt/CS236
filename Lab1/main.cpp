@@ -20,23 +20,13 @@ int main(int argc, char **argv) {
         }
     }
 
-    // Convert enum TokenType to appropriate string (see Token.h)
-    char const *TokenTypeArr[] = {"COMMA", "PERIOD", "Q_MARK", "LEFT_PAREN", "RIGHT_PAREN", "COLON", "COLON_DASH",
-                "MULTIPLY", "ADD", "SCHEMES", "FACTS", "RULES", "QUERIES", "ID", "STRING",
-                "COMMENT", "UNDEFINED", "EOF"};
-
+    // Run lexer
     Lexer *l = new Lexer();
     l->Run(ss.str());
 
-    // stdout each token
-    // (TOKENTYPE,"name",lineNumber)
-    for (Token* T : l->tokens) {
-        std::cout << '(' << TokenTypeArr[T->type] << ",\"" << T->name << "\"," << T->lineNumber << ')' << std::endl;
-    }
-
-    std::cout << "Total Tokens = " << l->tokens.size();
-
-
+    // Print tokens
+    l->Print();
+    
     // Clean up
     delete l;
 
