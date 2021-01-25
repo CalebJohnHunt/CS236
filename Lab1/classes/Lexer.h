@@ -4,7 +4,6 @@
 #include <string>
 
 #include "Token.h"
-#include "InvalidToken.h"
 #include "Automaton.h"
 #include "MatcherAutomaton.h"
 #include "IDAutomaton.h"

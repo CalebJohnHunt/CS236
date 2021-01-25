@@ -66,8 +66,8 @@ void Lexer::Run(std::string input) {
         }
         else {
             maxRead = 1;
-            Token *newToken = new InvalidToken(std::string(1, input[0]), lineNumber);
-            tokens.push_back(newToken);
+            // Token *newToken = new InvalidToken(std::string(1, input[0]), lineNumber);
+            tokens.push_back(new Token(UNDEFINED, input[0], lineNumber));
         }
         // input = input.substr(maxRead, input.size());
         input.erase(0, maxRead);
