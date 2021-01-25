@@ -4,7 +4,7 @@
 How to use:
 1. Clone
 2. Compile
-    * Run `bash make.sh`
-    * Out file is "scanner" 
+    * Run `g++ -Wall -Werror -std=c++17 -g classes/*.cpp main.cpp -o lab1`
+    * Out file is "lab1" 
 3. Give input file as parameter
-    * `./scanner input.txt`
+    * `./lab1 input.txt`
