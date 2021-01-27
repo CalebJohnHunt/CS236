@@ -6,7 +6,7 @@
 
 class Automaton {
 public:
-    Automaton(TokenType type);
+    Automaton(Token::TokenType type);
     virtual ~Automaton() {};
 
     virtual size_t Start(const std::string& input) = 0;
@@ -14,7 +14,7 @@ public:
     size_t NewLinesRead() const;
 
 protected:
-    TokenType type;
+    Token::TokenType type;
     size_t newLines;
     size_t inputRead = 0;
 

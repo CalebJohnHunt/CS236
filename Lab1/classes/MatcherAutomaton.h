@@ -5,7 +5,7 @@
 
 class MatcherAutomaton : public Automaton {
 public:
-    MatcherAutomaton(std::string toMatch, TokenType type);
+    MatcherAutomaton(std::string toMatch, Token::TokenType type);
     size_t Start(const std::string& input) override;
 
 private:

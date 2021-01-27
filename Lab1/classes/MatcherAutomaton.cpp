@@ -1,6 +1,6 @@
 #include "MatcherAutomaton.h"
 
-MatcherAutomaton::MatcherAutomaton(std::string toMatch, TokenType type)
+MatcherAutomaton::MatcherAutomaton(std::string toMatch, Token::TokenType type)
     : Automaton(type) {
     this->toMatch = toMatch;
     this->newLines = 0;

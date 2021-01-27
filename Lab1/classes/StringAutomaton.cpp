@@ -1,13 +1,13 @@
 #include "StringAutomaton.h"
 
-StringAutomaton::StringAutomaton(TokenType type)
+StringAutomaton::StringAutomaton(Token::TokenType type)
     : Automaton(type) {
 }
 
 size_t StringAutomaton::Start(const std::string& input) {
     if (input[0] == '\'') {
         this->newLines = 0;
-        this->type = STRING;
+        this->type = Token::STRING;
         inputRead = 1;
         while (inputRead < input.size()) {
             if (input[inputRead] == '\'') {
@@ -27,7 +27,7 @@ size_t StringAutomaton::Start(const std::string& input) {
             inputRead++;
         }
         // we got to the end of the file :(
-        this->type = UNDEFINED;
+        this->type = Token::UNDEFINED;
         return inputRead;
     }
     return 0;

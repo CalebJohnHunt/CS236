@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-IDAutomaton::IDAutomaton(TokenType type) : Automaton(type) {
+IDAutomaton::IDAutomaton(Token::TokenType type) : Automaton(type) {
     this->newLines = 0;
 }
 

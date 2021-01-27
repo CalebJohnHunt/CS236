@@ -7,20 +7,20 @@ Lexer::Lexer() {
     tokens = std::vector<Token*>();
     automata = std::vector<Automaton*>();
     // Matching automata first
-    automata.push_back(new MatcherAutomaton(",",  COMMA));
-    automata.push_back(new MatcherAutomaton(".",  PERIOD));
-    automata.push_back(new MatcherAutomaton("?",  Q_MARK));
-    automata.push_back(new MatcherAutomaton("(",  LEFT_PAREN));
-    automata.push_back(new MatcherAutomaton(")",  RIGHT_PAREN));
-    automata.push_back(new MatcherAutomaton(":",  COLON));
-    automata.push_back(new MatcherAutomaton(":-", COLON_DASH));
-    automata.push_back(new MatcherAutomaton("*",  MULTIPLY));
-    automata.push_back(new MatcherAutomaton("+",  ADD));
-    automata.push_back(new MatcherAutomaton("\0",  END));
-    automata.push_back(new MatcherAutomaton("Schemes", SCHEMES));
-    automata.push_back(new MatcherAutomaton("Facts",   FACTS));
-    automata.push_back(new MatcherAutomaton("Rules",   RULES));
-    automata.push_back(new MatcherAutomaton("Queries", QUERIES));
+    automata.push_back(new MatcherAutomaton(",",  Token::COMMA));
+    automata.push_back(new MatcherAutomaton(".",  Token::PERIOD));
+    automata.push_back(new MatcherAutomaton("?",  Token::Q_MARK));
+    automata.push_back(new MatcherAutomaton("(",  Token::LEFT_PAREN));
+    automata.push_back(new MatcherAutomaton(")",  Token::RIGHT_PAREN));
+    automata.push_back(new MatcherAutomaton(":",  Token::COLON));
+    automata.push_back(new MatcherAutomaton(":-", Token::COLON_DASH));
+    automata.push_back(new MatcherAutomaton("*",  Token::MULTIPLY));
+    automata.push_back(new MatcherAutomaton("+",  Token::ADD));
+    automata.push_back(new MatcherAutomaton("\0",  Token::END));
+    automata.push_back(new MatcherAutomaton("Schemes", Token::SCHEMES));
+    automata.push_back(new MatcherAutomaton("Facts",   Token::FACTS));
+    automata.push_back(new MatcherAutomaton("Rules",   Token::RULES));
+    automata.push_back(new MatcherAutomaton("Queries", Token::QUERIES));
     automata.push_back(new IDAutomaton());
     automata.push_back(new StringAutomaton());
     automata.push_back(new BlockCommentAutomaton());
@@ -37,10 +37,8 @@ Lexer::~Lexer() {
 }
 
 void Lexer::Run(std::string input) {
-    // std::cout << "RUN INPUT: " << input << std::endl;
     size_t lineNumber = 1;
     while (input.size() > 0) {
-        // std::cout << "WHILE INPUT: " << input << std::endl;
         size_t maxRead = 0;
         Automaton *maxAutomaton = automata[0];
         if (isspace(input[0])) {
@@ -66,18 +64,18 @@ void Lexer::Run(std::string input) {
         }
         else {
             maxRead = 1;
-            tokens.push_back(new Token(UNDEFINED, std::string(1, input[0]), lineNumber));
+            tokens.push_back(new Token(Token::UNDEFINED, std::string(1, input[0]), lineNumber));
         }
         input.erase(0, maxRead);
     }
 
     // Add EOF token
-    tokens.push_back(new Token(END, "", lineNumber));
+    tokens.push_back(new Token(Token::END, "", lineNumber));
 }
 
 void Lexer::Print() {
     // Convert enum TokenType to appropriate string (see Token.h)
-    char const *TokenTypeArr[] = {
+    const char *TokenTypeArr[] = {
         "COMMA", "PERIOD", "Q_MARK", "LEFT_PAREN", "RIGHT_PAREN", "COLON", "COLON_DASH",
         "MULTIPLY", "ADD", "SCHEMES", "FACTS", "RULES", "QUERIES", "ID", "STRING",
         "COMMENT", "UNDEFINED", "EOF"

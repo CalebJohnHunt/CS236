@@ -4,7 +4,7 @@
 
 class StringAutomaton : public Automaton {
 public:
-    StringAutomaton(TokenType type = STRING);
+    StringAutomaton(Token::TokenType type = Token::STRING);
     size_t Start(const std::string& input) override;
 
 private:

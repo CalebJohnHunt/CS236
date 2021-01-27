@@ -4,7 +4,7 @@
 
 class CommentAutomaton : public Automaton {
 public:
-    CommentAutomaton(TokenType type = COMMENT);
+    CommentAutomaton(Token::TokenType type = Token::COMMENT);
     size_t Start(const std::string& input) override;
 
 private:

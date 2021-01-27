@@ -1,6 +1,6 @@
 #include "CommentAutomaton.h"
 
-CommentAutomaton::CommentAutomaton(TokenType type)
+CommentAutomaton::CommentAutomaton(Token::TokenType type)
     : Automaton(type) {
     this->newLines = 0;
 }

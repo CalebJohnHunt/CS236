@@ -1,6 +1,6 @@
 #include "Automaton.h"
 
-Automaton::Automaton(TokenType type) {
+Automaton::Automaton(Token::TokenType type) {
     this->type = type;
 }
 

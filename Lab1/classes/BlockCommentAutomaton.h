@@ -4,7 +4,7 @@
 
 class BlockCommentAutomaton : public Automaton {
 public:
-    BlockCommentAutomaton(TokenType type = COMMENT);
+    BlockCommentAutomaton(Token::TokenType type = Token::COMMENT);
     size_t Start(const std::string& input) override;
 
 
