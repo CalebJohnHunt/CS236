@@ -1,34 +1,29 @@
 #include <iostream>
 #include <string>
-#include <sstream>
-#include <fstream>
-
-#include <string.h>
 
 #include "./classes/Lexer.h"
 
 
 int main(int argc, char **argv) {
-    std::stringstream ss;
-
     // Check command line for file
     if (argc > 1) {
-        // Read file
-        std::ifstream File(argv[1]);
-        if (File) {
-            ss << File.rdbuf();
-        }
+        Lexer *l = new Lexer(argv[1]);
+        
+        // Run lexer
+        l->Run();
+
+        // Print tokens
+        l->Print();
+        
+        // Clean up
+        delete l;
+        
+    }
+    else {
+        std::cout << "No parameter given\n";
+        return 1;
     }
 
-    // Run lexer
-    Lexer *l = new Lexer();
-    l->Run(ss.str());
-
-    // Print tokens
-    l->Print();
-    
-    // Clean up
-    delete l;
 
     return 0;
 }

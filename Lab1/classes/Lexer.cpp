@@ -3,9 +3,21 @@
 #include <iostream>
 #include <string>
 
-Lexer::Lexer() {
+Lexer::Lexer(const std::string &file_name) {
+    // Read file
+    std::fstream f(file_name);
+    if (f) {
+        std::stringstream ss;
+        ss << f.rdbuf();
+        this->input = ss.str();
+    }
+    else {
+        throw "Bad input file";
+    }
+
     tokens = std::vector<Token*>();
     automata = std::vector<Automaton*>();
+
     // Matching automata first
     automata.push_back(new MatcherAutomaton(",",  Token::COMMA));
     automata.push_back(new MatcherAutomaton(".",  Token::PERIOD));
@@ -16,7 +28,6 @@ Lexer::Lexer() {
     automata.push_back(new MatcherAutomaton(":-", Token::COLON_DASH));
     automata.push_back(new MatcherAutomaton("*",  Token::MULTIPLY));
     automata.push_back(new MatcherAutomaton("+",  Token::ADD));
-    automata.push_back(new MatcherAutomaton("\0",  Token::END));
     automata.push_back(new MatcherAutomaton("Schemes", Token::SCHEMES));
     automata.push_back(new MatcherAutomaton("Facts",   Token::FACTS));
     automata.push_back(new MatcherAutomaton("Rules",   Token::RULES));
@@ -28,15 +39,15 @@ Lexer::Lexer() {
 }
 
 Lexer::~Lexer() {
-    for (auto a : tokens) {
+    for (Token* a : tokens) {
         delete a;
     }
-    for (auto a : automata) {
+    for (Automaton* a : automata) {
         delete a;
     }
 }
 
-void Lexer::Run(std::string input) {
+void Lexer::Run() {
     size_t lineNumber = 1;
     while (input.size() > 0) {
         size_t maxRead = 0;

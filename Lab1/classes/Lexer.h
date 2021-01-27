@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <string>
+#include <fstream>
+#include <sstream>
 
 #include "Token.h"
 #include "Automaton.h"
@@ -14,13 +16,14 @@
 
 class Lexer {
 public:
-    Lexer();
+    Lexer(const std::string &fileName);
     ~Lexer();
-    void Run(std::string input);
+    void Run();
     void Print();
 
 private:
     std::vector<Token*> tokens;
     std::vector<Automaton*> automata;
+    std::string input = "";
 
 };
