@@ -1,6 +1,11 @@
 # CS236-Lab1
 ## Tokenizer (Or lexer)
 
+
+Based on regular expressions (not regex, but the mathematical regular expressions) and finite state automata.
+
+---
+
 How to use:
 1. Clone
 2. Compile
