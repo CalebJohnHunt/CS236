@@ -18,7 +18,7 @@ class Lexer {
 public:
     Lexer(const std::string &fileName);
     ~Lexer();
-    void Run();
+    std::vector<Token*> Run();
     void Print();
 
 private:

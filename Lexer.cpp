@@ -47,7 +47,7 @@ Lexer::~Lexer() {
     }
 }
 
-void Lexer::Run() {
+std::vector<Token*> Lexer::Run() {
     size_t lineNumber = 1;
     while (input.size() > 0) {
         size_t maxRead = 0;
@@ -71,7 +71,8 @@ void Lexer::Run() {
         if (maxRead > 0) {
             Token *newToken = maxAutomaton->CreateToken(input.substr(0, maxRead), lineNumber);
             lineNumber += maxAutomaton->NewLinesRead();
-            tokens.push_back(newToken);
+            if (newToken->type != Token::COMMENT) // REMOVES COMMENTS FROM TOKENS This will make this project fail Lab 1!
+                tokens.push_back(newToken);
         }
         else {
             maxRead = 1;
@@ -82,6 +83,8 @@ void Lexer::Run() {
 
     // Add EOF token
     tokens.push_back(new Token(Token::END, "", lineNumber));
+
+    return tokens;
 }
 
 void Lexer::Print() {
