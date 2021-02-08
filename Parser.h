@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "Token.h"
-// #include "Predicate.h"
+#include "DatalogProgram.h"
 
 
 class Parser {
@@ -15,11 +15,6 @@ public:
 private:
     std::vector<Token*> tokens;
     size_t index = 0;
-
-    // std::vector<Predicate*> schemes;
-    // std::vector<Predicate*> facts;
-    // std::vector<Predicate*> queries;
-    // std::vector<Predicate*> rules;
 
     bool Match(Token::TokenType);
 
@@ -33,12 +28,12 @@ private:
     void ParseRule();
     void ParseQuery();
     void ParseHeadPredicate();
-    void ParsePredicate();
+    Predicate* ParsePredicate();
     void ParsePredicateList();
-    void ParseParameterList();
+    std::vector<Parameter*> ParseParameterList();
     void ParseStringList();
     void ParseIdList();
-    void ParseParameter();
-    void ParseExpression();
+    Parameter* ParseParameter();
+    std::string ParseExpression();
     void ParseOperator();
 };

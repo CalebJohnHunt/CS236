@@ -8,6 +8,12 @@ Parser::Parser(std::vector<Token*> tokens) {
 }
 
 void Parser::Parse() {
+
+    Predicate* p = ParsePredicate();
+
+    std::cout << std::endl << p->toString() << std::endl;
+
+    return;
     try {
         ParseDatalogProgram();
         std::cout << "\n\nSuccess\n";
@@ -169,15 +175,20 @@ void Parser::ParseHeadPredicate() {
         throw ")";
 }
 
-void Parser::ParsePredicate() {
+Predicate* Parser::ParsePredicate() {
+    Predicate* p = new Predicate(tokens[index]->name);
     if (!Match(Token::ID))
         throw "Id";
     if (!Match(Token::LEFT_PAREN))
         throw "(";
-    ParseParameter();
-    ParseParameterList();
+    p->AddParameter(ParseParameter());
+    for (auto a : ParseParameterList()) {
+        p->AddParameter(a);
+    }
     if (!Match(Token::RIGHT_PAREN))
         throw ")";
+    
+    return p;
 }
 
 void Parser::ParsePredicateList() {
@@ -188,12 +199,14 @@ void Parser::ParsePredicateList() {
     return;
 }
 
-void Parser::ParseParameterList() {
+std::vector<Parameter*> Parser::ParseParameterList() {
+    std::vector<Parameter*> parameters;
     if (Match(Token::COMMA)) {
-        ParseParameter();
-        ParseParameterList();
+        parameters.push_back(ParseParameter());
+        std::vector<Parameter*> p = ParseParameterList();
+        parameters.insert(parameters.end(), p.begin(), p.end());
     }
-    return;
+    return parameters;
 }
 
 void Parser::ParseStringList() {
@@ -214,21 +227,28 @@ void Parser::ParseIdList() {
     return;
 }
 
-void Parser::ParseParameter() {
+Parameter* Parser::ParseParameter() {
     if (Match(Token::STRING) || Match(Token::ID)) {
-        return;
+        return new Parameter(tokens[index-1]->name);
     }
-    ParseExpression();
+    return new Parameter(ParseExpression());
 }
 
-void Parser::ParseExpression() {
+std::string Parser::ParseExpression() {
+    std::string s;
+    s += "(";
     if (!Match(Token::LEFT_PAREN))
         throw "(";
+    s += tokens[index]->name;
     ParseParameter();
+    s += tokens[index]->name;
     ParseOperator();
+    s += tokens[index]->name;
     ParseParameter();
+    s += ")";
     if (!Match(Token::RIGHT_PAREN))
         throw ")";
+    return s;
 }
 
 void Parser::ParseOperator() {
