@@ -1,9 +1,15 @@
-# CS236
-BYU
-2021 Winter
-Jan-April
----
-This is a collection of projects I made for my CS236 Discrete Structures class.  
-The labs together make a compiler for a language called DataLog.  
+# CS236-Lab
 
-Each project has its own README, so go ahead and click into them to read more
+
+
+Based on regular expressions (not regex, but the mathematical regular expressions) and finite state automata.
+
+---
+
+How to use:
+1. Clone
+2. Compile
+    * Run `g++ -Wall -Werror -std=c++17 -g *.cpp main.cpp -o lab1`
+    * Out file is "lab"
+3. Give input file as parameter
+    * `./lab input.txt`
