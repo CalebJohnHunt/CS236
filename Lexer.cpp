@@ -12,7 +12,9 @@ Lexer::Lexer(const std::string &file_name) {
         this->input = ss.str();
     }
     else {
-        throw "Bad input file";
+        std::cout << "Input file not found\n";
+        throw;
+        // throw "Bad input file";
     }
 
     tokens = std::vector<Token*>();
