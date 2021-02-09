@@ -9,9 +9,25 @@ Parser::Parser(std::vector<Token*> tokens) {
 
 void Parser::Parse() {
 
-    Predicate* p = ParsePredicate();
+    try {
+        std::cout << '\n';
+        if (!Match(Token::SCHEMES))
+            throw "Schemes";
+        if (!Match(Token::COLON))
+            throw ":";
 
-    std::cout << std::endl << p->toString() << std::endl;
+        Predicate* p = ParseScheme();
+        std::vector<Predicate*> q = ParseSchemeList();
+
+        std::cout << std::endl << p->toString() << std::endl;
+        for (auto a : q) {
+            std::cout << a->toString();
+        }
+        std::cout << std::endl;
+    }
+    catch (const char* expected) {
+        std::cout << "Exception: expected " << expected << " got " << tokens[index]->name << std::endl;
+    }
 
     return;
     try {
@@ -61,30 +77,36 @@ void Parser::ParseDatalogProgram() {
 }
 
 // schemeList	->	scheme schemeList | lambda
-void Parser::ParseSchemeList() {
+std::vector<Predicate*> Parser::ParseSchemeList() {
+    std::vector<Predicate*> p;
     try {
-        ParseScheme();
+        p.push_back(ParseScheme());
     }
     catch (const char* e) { // Must be lambda
-        return;
+        return p;
     }
-    ParseSchemeList();
+    std::vector<Predicate*> l = ParseSchemeList();
+    p.insert(p.end(), l.begin(), l.end());
+    return p;
 }
 
 // factList	->	fact factList | lambda
-void Parser::ParseFactList() {
+std::vector<Predicate*> Parser::ParseFactList() {
+    std::vector<Predicate*> p;
     try {
-        ParseFact();
+        p.push_back(ParseFact());
     }
     catch (const char* e) {
         // Throw for some reason
         // Perhaps because it's the final one in the list? FOLLOW(fact) = {ID}
         if (strcmp(e,"Id") == 0)
-            return;
+            return p;
         // Nope, just bad input
         throw e;
     }
-    ParseFactList();
+    std::vector<Predicate*> l = ParseFactList();
+    p.insert(p.end(), l.begin(), l.end());
+    return p;
 }
 // ruleList	->	rule ruleList | lambda
 void Parser::ParseRuleList() {
@@ -103,46 +125,60 @@ void Parser::ParseRuleList() {
 }
 
 // queryList	->	query queryList | lambda
-void Parser::ParseQueryList() {
+std::vector<Predicate*> Parser::ParseQueryList() {
+    std::vector<Predicate*> p;
     try {
-        ParseQuery();
+        p.push_back(ParseQuery());
     }
     catch (const char* e) { // Must be lambda
-        return;
+        return p;
     }
-    ParseQueryList();
+    std::vector<Predicate*> l = ParseQueryList();
+    p.insert(p.end(), l.begin(), l.end());
+    return p;
 }
 
 // scheme   	-> 	ID LEFT_PAREN ID idList RIGHT_PAREN
 // id (id, idlist)
-void Parser::ParseScheme() {
+Predicate* Parser::ParseScheme() {
+    Predicate* p = new Predicate(tokens[index]->name);
     if (!Match(Token::ID))
         throw "Id";
     if (!Match(Token::LEFT_PAREN))
         throw "(";
+    p->AddParameter(new Parameter(tokens[index]->name));
     if (!Match(Token::ID))
         throw "Id";
-    ParseIdList();
+    for (auto a : ParseIdList()) {
+        p->AddParameter(a);
+    }
     if (!Match(Token::RIGHT_PAREN))
         throw ")";
+    
+    return p;
 }
 
 // fact    	->	ID LEFT_PAREN STRING stringList RIGHT_PAREN PERIOD
 // id('string', 'stringlist').
-void Parser::ParseFact() {
+Predicate* Parser::ParseFact() {
+    Predicate* p = new Predicate(tokens[index]->name);
     if (!Match(Token::ID))
         throw "Id";
     if (!Match(Token::LEFT_PAREN))
         throw "(";
+    p->AddParameter(new Parameter(tokens[index]->name));
     if (!Match(Token::STRING))
         throw "String";
-    ParseStringList();
+    for (auto a : ParseStringList()) {
+        p->AddParameter(a);
+    }
     if (!Match(Token::RIGHT_PAREN))
         throw ")";
     if (!Match(Token::PERIOD))
         throw ".";
-
+    return p;
 }
+
 // rule    	->	headPredicate COLON_DASH predicate predicateList PERIOD
 // id (id, idlist) :- id ('param', paramlist) predicatelist.
 void Parser::ParseRule() {
@@ -157,22 +193,28 @@ void Parser::ParseRule() {
 
 // query	        ->      predicate Q_MARK
 // id ('param', paramlist)?
-void Parser::ParseQuery() {
-    ParsePredicate();
+Predicate* Parser::ParseQuery() {
+    Predicate* p = ParsePredicate();
     if (!Match(Token::Q_MARK))
         throw "?";
+    return p;
 }
 
-void Parser::ParseHeadPredicate() {
+Predicate* Parser::ParseHeadPredicate() {
+    Predicate* p = new Predicate(tokens[index]->name);
     if (!Match(Token::ID))
         throw "Id";
     if (!Match(Token::LEFT_PAREN))
         throw "(";
+    p->AddParameter(new Parameter(tokens[index]->name));
     if (!Match(Token::ID))
         throw "Id";
-    ParseIdList();
+    for (auto a : ParseIdList()) {
+        p->AddParameter(a);
+    }
     if (!Match(Token::RIGHT_PAREN))
         throw ")";
+    return p;
 }
 
 Predicate* Parser::ParsePredicate() {
@@ -191,40 +233,48 @@ Predicate* Parser::ParsePredicate() {
     return p;
 }
 
-void Parser::ParsePredicateList() {
+std::vector<Predicate*> Parser::ParsePredicateList() {
+    std::vector<Predicate*> p;
     if (Match(Token::COMMA)) {
-        ParsePredicate();
-        ParsePredicateList();
+        p.push_back(ParsePredicate());
+        std::vector<Predicate*> l = ParsePredicateList();
+        p.insert(p.end(), l.begin(), l.end());
     }
-    return;
+    return p;
 }
 
 std::vector<Parameter*> Parser::ParseParameterList() {
-    std::vector<Parameter*> parameters;
+    std::vector<Parameter*> p;
     if (Match(Token::COMMA)) {
-        parameters.push_back(ParseParameter());
-        std::vector<Parameter*> p = ParseParameterList();
-        parameters.insert(parameters.end(), p.begin(), p.end());
+        p.push_back(ParseParameter());
+        std::vector<Parameter*> l = ParseParameterList();
+        p.insert(p.end(), l.begin(), l.end());
     }
-    return parameters;
+    return p;
 }
 
-void Parser::ParseStringList() {
+std::vector<Parameter*> Parser::ParseStringList() {
+    std::vector<Parameter*> p;
     if (Match(Token::COMMA)) {
+        p.push_back(new Parameter(tokens[index]->name));
         if (!Match(Token::STRING))
             throw "String";
-        ParseStringList();
+        std::vector<Parameter*> l = ParseStringList();
+        p.insert(p.end(), l.begin(), l.end());
     }
-    return;
+    return p;
 }
 
-void Parser::ParseIdList() {
+std::vector<Parameter*> Parser::ParseIdList() {
+    std::vector<Parameter*> p;
     if (Match(Token::COMMA)) {
+        p.push_back(new Parameter(tokens[index]->name));
         if (!Match(Token::ID))
             throw "Id";
-        ParseIdList();
+        std::vector<Parameter*> l = ParseIdList();
+        p.insert(p.end(), l.begin(), l.end());
     }
-    return;
+    return p;
 }
 
 Parameter* Parser::ParseParameter() {

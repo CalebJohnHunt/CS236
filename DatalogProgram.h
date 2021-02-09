@@ -3,14 +3,15 @@
 #include <vector>
 
 #include "Predicate.h"
+#include "Rule.h"
 
 class DatalogProgram {
 public:
-
+    std::string toString();
 
 private:
     std::vector<Predicate*> schemes;
     std::vector<Predicate*> facts;
     std::vector<Predicate*> queries;
-    std::vector<Predicate*> rules;
+    std::vector<Rule*> rules;
 };
