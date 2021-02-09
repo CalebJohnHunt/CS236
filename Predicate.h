@@ -11,8 +11,8 @@ public:
     Predicate(std::string);
     void AddParameter(Parameter*);
     std::string toString();
+    std::vector<Parameter*> parameters;
 
 private:
     std::string id;
-    std::vector<Parameter*> parameters;
 };

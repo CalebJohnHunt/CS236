@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
         std::vector<Token*> tokens = l->Run();
 
         // Print tokens
-        l->Print();
+        // l->Print();
         
 
         Parser* p = new Parser(tokens);

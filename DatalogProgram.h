@@ -9,9 +9,9 @@ class DatalogProgram {
 public:
     std::string toString();
 
-private:
     std::vector<Predicate*> schemes;
     std::vector<Predicate*> facts;
     std::vector<Predicate*> queries;
     std::vector<Rule*> rules;
+private:
 };

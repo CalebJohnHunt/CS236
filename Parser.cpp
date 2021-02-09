@@ -10,32 +10,13 @@ Parser::Parser(std::vector<Token*> tokens) {
 void Parser::Parse() {
 
     try {
-        std::cout << '\n';
-        if (!Match(Token::SCHEMES))
-            throw "Schemes";
-        if (!Match(Token::COLON))
-            throw ":";
-
-        Predicate* p = ParseScheme();
-        std::vector<Predicate*> q = ParseSchemeList();
-
-        std::cout << std::endl << p->toString() << std::endl;
-        for (auto a : q) {
-            std::cout << a->toString();
-        }
-        std::cout << std::endl;
+        DatalogProgram* d = ParseDatalogProgram();
+        std::cout << "Success!\n";
+        std::cout << d->toString();
     }
     catch (const char* expected) {
-        std::cout << "Exception: expected " << expected << " got " << tokens[index]->name << std::endl;
-    }
-
-    return;
-    try {
-        ParseDatalogProgram();
-        std::cout << "\n\nSuccess\n";
-    }
-    catch (const char* expected) {
-        std::cout << "Exception: expected " << expected << " got " << tokens[index]->name << std::endl;
+        // std::cout << "Exception: expected " << expected << " got " << tokens[index]->name << std::endl;
+        std::cout << "Failure!" << "\n  " << tokens[index]->toString() << '\n';
     }
 }
 
@@ -49,31 +30,41 @@ bool Parser::Match(Token::TokenType type) {
 }
 
 // datalogProgram	->	SCHEMES COLON scheme schemeList FACTS COLON factList RULES COLON ruleList QUERIES COLON query queryList EOF
-void Parser::ParseDatalogProgram() {
+DatalogProgram* Parser::ParseDatalogProgram() {
+    DatalogProgram* d = new DatalogProgram();
     if (!Match(Token::SCHEMES))
         throw "Scheme";
     if (!Match(Token::COLON))
         throw ":";
-    ParseScheme();
-    ParseSchemeList();
+    d->schemes.push_back(ParseScheme());
+    for (auto a : ParseSchemeList()) {
+        d->schemes.push_back(a);
+    }
     if (!Match(Token::FACTS))
         throw "Facts";
     if (!Match(Token::COLON))
         throw ":";
-    ParseFactList();
+    for (auto a : ParseFactList()) {
+        d->facts.push_back(a);
+    }
     if (!Match(Token::RULES))
         throw "Rules";
     if (!Match(Token::COLON))
         throw ":";
-    ParseRuleList();
+    for (auto a : ParseRuleList()) {
+        d->rules.push_back(a);
+    }
     if (!Match(Token::QUERIES))
         throw "Queries";
     if (!Match(Token::COLON))
         throw ":";
-    ParseQuery();
-    ParseQueryList();
+    d->queries.push_back(ParseQuery());
+    for (auto a : ParseQueryList()) {
+        d->queries.push_back(a);
+    }
     if (!Match(Token::END))
         throw "EOF";
+    return d;
 }
 
 // schemeList	->	scheme schemeList | lambda
@@ -109,19 +100,22 @@ std::vector<Predicate*> Parser::ParseFactList() {
     return p;
 }
 // ruleList	->	rule ruleList | lambda
-void Parser::ParseRuleList() {
+std::vector<Rule*> Parser::ParseRuleList() {
+    std::vector<Rule*> r;
     try {
-        ParseRule();
+        r.push_back(ParseRule());
     }
     catch (const char* e) {
         // Throw for some reason
         // Perhaps because it's the final one in the list? FOLLOW(rule) = {ID}
         if (strcmp(e,"Id") == 0)
-            return;
+            return r;
         // Nope, just bad input
         throw e;
     }
-    ParseRuleList();
+    std::vector<Rule*> l = ParseRuleList();
+    r.insert(r.end(), l.begin(), l.end());
+    return r;
 }
 
 // queryList	->	query queryList | lambda
@@ -181,14 +175,17 @@ Predicate* Parser::ParseFact() {
 
 // rule    	->	headPredicate COLON_DASH predicate predicateList PERIOD
 // id (id, idlist) :- id ('param', paramlist) predicatelist.
-void Parser::ParseRule() {
-    ParseHeadPredicate();
+Rule* Parser::ParseRule() {
+    Rule* r = new Rule(ParseHeadPredicate());
     if (!Match(Token::COLON_DASH))
         throw ":-";
-    ParsePredicate();
-    ParsePredicateList();
+    r->AddPredicate(ParsePredicate());
+    for (auto a : ParsePredicateList()) {
+        r->AddPredicate(a);
+    }
     if (!Match(Token::PERIOD))
         throw ".";
+    return r;
 }
 
 // query	        ->      predicate Q_MARK
@@ -289,12 +286,10 @@ std::string Parser::ParseExpression() {
     s += "(";
     if (!Match(Token::LEFT_PAREN))
         throw "(";
-    s += tokens[index]->name;
-    ParseParameter();
+    s += ParseParameter()->toString();
     s += tokens[index]->name;
     ParseOperator();
-    s += tokens[index]->name;
-    ParseParameter();
+    s += ParseParameter()->toString();
     s += ")";
     if (!Match(Token::RIGHT_PAREN))
         throw ")";

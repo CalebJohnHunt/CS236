@@ -18,14 +18,14 @@ private:
 
     bool Match(Token::TokenType);
 
-    void ParseDatalogProgram();
+    DatalogProgram* ParseDatalogProgram();
     std::vector<Predicate*> ParseSchemeList();
     std::vector<Predicate*> ParseFactList();
-    void ParseRuleList();
+    std::vector<Rule*> ParseRuleList();
     std::vector<Predicate*> ParseQueryList();
     Predicate* ParseScheme();
     Predicate* ParseFact();
-    void ParseRule();
+    Rule* ParseRule();
     Predicate* ParseQuery();
     Predicate* ParseHeadPredicate();
     Predicate* ParsePredicate();
