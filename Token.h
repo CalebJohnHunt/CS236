@@ -11,6 +11,7 @@ public:
                     
     Token(TokenType type, std::string name, size_t lineNumber);
     Token(TokenType type, char charname, size_t lineNumber);
+    std::string toString();
 
 // protected:
     TokenType type;
