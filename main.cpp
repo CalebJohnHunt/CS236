@@ -12,14 +12,18 @@ int main(int argc, char **argv) {
         // Run lexer
         std::vector<Token*> tokens = l->Run();
 
-        // Print tokens
+        // Print tokens Lab1
         // l->Print();
         
 
         Parser* p = new Parser(tokens);
-        p->Parse();
-
-
+        DatalogProgram* d = p->Parse();
+        
+        // Print DatalogProgram Lab2
+        if (d != NULL) {
+            std::cout << "Success!\n"
+                      << d->toString();
+        }
 
 
 
@@ -27,6 +31,7 @@ int main(int argc, char **argv) {
         // Clean up
         delete l;
         delete p;
+        delete d;
     }
     else {
         std::cout << "No parameter given\n";

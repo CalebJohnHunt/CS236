@@ -6,7 +6,13 @@ Predicate::Predicate(std::string id) {
     this->id = id;
 }
 
-void Predicate::AddParameter(Parameter* p) {
+Predicate::~Predicate() {
+    // for (auto a: parameters) {
+    //     delete a;
+    // }
+}
+
+void Predicate::AddParameter(Parameter p) {
     parameters.push_back(p);
 }
 
@@ -17,7 +23,7 @@ std::string Predicate::toString() {
 
 
     for (size_t i = 0; i < parameters.size(); i++) {
-        ss << parameters[i]->toString();
+        ss << parameters[i].toString();
         if (i != parameters.size() - 1) {
             ss << ",";
         }

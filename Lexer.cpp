@@ -73,6 +73,8 @@ std::vector<Token*> Lexer::Run() {
             lineNumber += maxAutomaton->NewLinesRead();
             if (newToken->type != Token::COMMENT) // REMOVES COMMENTS FROM TOKENS This will make this project fail Lab 1!
                 tokens.push_back(newToken);
+            else
+                delete newToken;
         }
         else {
             maxRead = 1;

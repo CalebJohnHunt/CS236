@@ -8,10 +8,11 @@
 // id(param, param, param, etc)
 class Predicate {
 public:
-    Predicate(std::string);
-    void AddParameter(Parameter*);
+    Predicate(std::string id = "");
+    ~Predicate();
+    void AddParameter(Parameter);
     std::string toString();
-    std::vector<Parameter*> parameters;
+    std::vector<Parameter> parameters;
 
 private:
     std::string id;
