@@ -5,10 +5,25 @@
 #include "Parser.h"
 
 int main(int argc, char **argv) {
+
+    // Compressed Lab 2 pass off
+    // DatalogProgram* d = Parser(Lexer(argv[1]).Run()).Parse();
+    // if (d != NULL) {
+    //     std::cout << "Success!\n"
+    //               << d->toString();
+    // }
+
     // Check command line for file
     if (argc > 1) {
-        Lexer *l = new Lexer(argv[1]);
-        
+        Lexer *l;
+        try {
+            l = new Lexer(argv[1]);
+        }
+        catch (const char* e) {
+            std::cout << e << ". Ending early.\n";
+            return 0;
+        }
+
         // Run lexer
         std::vector<Token*> tokens = l->Run();
 
@@ -35,7 +50,7 @@ int main(int argc, char **argv) {
     }
     else {
         std::cout << "No parameter given\n";
-        return 1;
+        return 0;
     }
 
 
