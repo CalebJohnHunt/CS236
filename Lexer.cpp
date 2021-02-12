@@ -5,7 +5,7 @@
 
 Lexer::Lexer(const std::string &file_name) {
     // Read file
-    std::fstream f(file_name);
+    std::ifstream f(file_name);
     if (f) {
         std::stringstream ss;
         ss << f.rdbuf();
