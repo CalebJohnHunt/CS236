@@ -1,5 +1,7 @@
 #include "Rule.h"
 
+#include <iostream>
+
 Rule::Rule(Predicate head) {
     this->head = head;
 }

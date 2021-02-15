@@ -2,13 +2,16 @@
 
 #include <string>
 
+#include <iostream>
+
 class Parameter {
 public:
 
-    Parameter(std::string);
-    std::string toString();
+    Parameter();
+    virtual ~Parameter() {};
 
-private:
+    virtual std::string toString() = 0;
+
+protected:
     std::string value;
-
 };

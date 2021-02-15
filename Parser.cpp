@@ -147,7 +147,7 @@ Predicate Parser::ParseScheme() {
         throw "Id";
     if (!Match(Token::LEFT_PAREN))
         throw "(";
-    p.AddParameter(Parameter(tokens[index]->name));
+    p.AddParameter(new IdParameter(tokens[index]->name));
     if (!Match(Token::ID))
         throw "Id";
     for (auto a : ParseIdList()) {
@@ -167,7 +167,7 @@ Predicate Parser::ParseFact() {
         throw "Id";
     if (!Match(Token::LEFT_PAREN))
         throw "(";
-    p.AddParameter(Parameter(tokens[index]->name));
+    p.AddParameter(new StringParameter(tokens[index]->name));
     if (!Match(Token::STRING))
         throw "String";
     for (auto a : ParseStringList()) {
@@ -210,7 +210,7 @@ Predicate Parser::ParseHeadPredicate() {
         throw "Id";
     if (!Match(Token::LEFT_PAREN))
         throw "(";
-    p.AddParameter(Parameter(tokens[index]->name));
+    p.AddParameter(new IdParameter(tokens[index]->name));
     if (!Match(Token::ID))
         throw "Id";
     for (auto a : ParseIdList()) {
@@ -247,72 +247,67 @@ std::vector<Predicate> Parser::ParsePredicateList() {
     return p;
 }
 
-std::vector<Parameter> Parser::ParseParameterList() {
-    std::vector<Parameter> p;
+std::vector<Parameter*> Parser::ParseParameterList() {
+    std::vector<Parameter*> p;
     if (Match(Token::COMMA)) {
         p.push_back(ParseParameter());
-        std::vector<Parameter> l = ParseParameterList();
+        std::vector<Parameter*> l = ParseParameterList();
         p.insert(p.end(), l.begin(), l.end());
     }
     return p;
 }
 
-std::vector<Parameter> Parser::ParseStringList() {
-    std::vector<Parameter> p;
+std::vector<StringParameter*> Parser::ParseStringList() {
+    std::vector<StringParameter*> p;
     if (Match(Token::COMMA)) {
-        p.push_back(Parameter(tokens[index]->name));
+        p.push_back(new StringParameter(tokens[index]->name));
         if (!Match(Token::STRING))
             throw "String";
-        std::vector<Parameter> l = ParseStringList();
+        std::vector<StringParameter*> l = ParseStringList();
         p.insert(p.end(), l.begin(), l.end());
     }
     return p;
 }
 
-std::vector<Parameter> Parser::ParseIdList() {
-    std::vector<Parameter> p;
+std::vector<IdParameter*> Parser::ParseIdList() {
+    std::vector<IdParameter*> p;
     if (Match(Token::COMMA)) {
-        p.push_back(Parameter(tokens[index]->name));
+        p.push_back(new IdParameter(tokens[index]->name));
         if (!Match(Token::ID))
             throw "Id";
-        std::vector<Parameter> l = ParseIdList();
+        std::vector<IdParameter*> l = ParseIdList();
         p.insert(p.end(), l.begin(), l.end());
     }
     return p;
 }
 
-Parameter Parser::ParseParameter() {
-    std::string s = "";
-    if (Match(Token::STRING) || Match(Token::ID)) {
-        s = tokens[index-1]->name;
-        // return new Parameter(tokens[index-1]->name);
-    }
-    else {
-        s = ParseExpression();
-    }
-    return Parameter(s);
+Parameter* Parser::ParseParameter() {
+    if (Match(Token::STRING))
+        return new StringParameter(tokens[index-1]->name);
+    else if (Match(Token::ID))
+        return new IdParameter(tokens[index-1]->name);
+    else
+        return ParseExpression();
+    // return Parameter(s);
     // return new Parameter(ParseExpression());
     
 }
 
-std::string Parser::ParseExpression() {
-    std::string s;
-    s += "(";
+ExpressionParameter* Parser::ParseExpression() {
     if (!Match(Token::LEFT_PAREN))
         throw "(";
-    s += ParseParameter().toString();
-    s += tokens[index]->name;
-    ParseOperator();
-    s += ParseParameter().toString();
-    s += ")";
+    Parameter* l = ParseParameter();
+    char o = ParseOperator();
+    Parameter* r = ParseParameter();
     if (!Match(Token::RIGHT_PAREN))
         throw ")";
-    return s;
+    return new ExpressionParameter(l, o, r);
 }
 
-void Parser::ParseOperator() {
-    if (Match(Token::ADD) || Match(Token::MULTIPLY)) {
-        return;
-    }
+char Parser::ParseOperator() {
+    if (Match(Token::ADD))
+        return '+';
+    else if (Match(Token::MULTIPLY))
+        return '*';
     throw "+ or *";
 }

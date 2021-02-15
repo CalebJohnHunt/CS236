@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include <iostream>
+
 Predicate::Predicate(std::string id) {
     this->id = id;
 }
@@ -12,7 +14,7 @@ Predicate::~Predicate() {
     // }
 }
 
-void Predicate::AddParameter(Parameter p) {
+void Predicate::AddParameter(Parameter* p) {
     parameters.push_back(p);
 }
 
@@ -20,15 +22,12 @@ std::string Predicate::toString() {
     std::stringstream ss;
     ss << this->id
        << "(";
-
-
     for (size_t i = 0; i < parameters.size(); i++) {
-        ss << parameters[i].toString();
+        ss << parameters[i]->toString();
         if (i != parameters.size() - 1) {
             ss << ",";
         }
     }
-
     ss << ")";
 
     return ss.str();

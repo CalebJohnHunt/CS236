@@ -3,6 +3,8 @@
 #include <sstream>
 #include <set>
 
+#include <iostream>
+
 DatalogProgram::~DatalogProgram() {
     // for (auto a : schemes) {
     //     delete a;
@@ -43,7 +45,7 @@ std::string DatalogProgram::toString() {
     std::set<std::string> domain;
     for (auto a : facts) {
         for (auto p : a.parameters) {
-            domain.insert(p.toString());
+            domain.insert(p->toString());
         }
     }
 

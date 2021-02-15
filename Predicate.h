@@ -3,16 +3,18 @@
 #include <string>
 #include <vector>
 
-#include "Parameter.h"
+#include "IdParameter.h"
+#include "StringParameter.h"
+#include "ExpressionParameter.h"
 
 // id(param, param, param, etc)
 class Predicate {
 public:
     Predicate(std::string id = "");
     ~Predicate();
-    void AddParameter(Parameter);
+    void AddParameter(Parameter*);
     std::string toString();
-    std::vector<Parameter> parameters;
+    std::vector<Parameter*> parameters;
 
 private:
     std::string id;
