@@ -14,7 +14,8 @@ public:
 
     virtual std::string toString() = 0;
 
+    ParameterType type;
+    
 protected:
     std::string value;
-    ParameterType type;
 };
