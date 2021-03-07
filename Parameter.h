@@ -7,6 +7,8 @@
 class Parameter {
 public:
 
+    enum ParameterType {STRING, ID};
+
     Parameter();
     virtual ~Parameter() {};
 
@@ -14,4 +16,5 @@ public:
 
 protected:
     std::string value;
+    ParameterType type;
 };
