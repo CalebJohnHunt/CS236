@@ -24,14 +24,13 @@ void Interpreter::Interpret() {
     for (Predicate q : dataProg->queries) {
         Relation r = *dataBase->nameRelationMap[q.id]; // get relation with same name as query
         // select for each constant in query
-        // for (size_t i = 0; i < q.parameters.size(); i++) {
-        //     if (q.parameters[i].)
-        //     Relation r_constant_selected = r.select()
-        // }
+        selectConstants(r, q);
         // select for each pair of matching variable in query
+        selectVariables(r, q);
         // project using the positions of the variables in query
         // rename to match the names of variables in query
         // rpint the resulting relation
+        std::cout << "Query complete:\n" << r.toString() << std::endl;
     }
 }
 
@@ -43,6 +42,8 @@ Relation* Interpreter::evaluatePredicate(const Predicate &p) {
     return r;
 }
 
+// Helper functions to keep code clear
+
 Tuple* Interpreter::evaluateTuplePredicate(const Predicate &p) {
     Tuple* t = new Tuple();
     for (Parameter* param : p.parameters) {
@@ -50,3 +51,15 @@ Tuple* Interpreter::evaluateTuplePredicate(const Predicate &p) {
     }
     return t;
 }
+
+void Interpreter::selectConstants(Relation& r, Predicate& q) {
+    for (size_t i = 0; i < q.parameters.size(); i++) {
+        if (q.parameters[i]->type == Parameter::ParameterType::STRING) { // Select if parameter is constant (not variable)
+            r = r.select(i, q.parameters[i]->toString());
+        }
+    }
+}
+
+// void Interpreter::selectVariables(Relation& r, Predicate& q) {
+
+// }
