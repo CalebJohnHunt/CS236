@@ -17,7 +17,7 @@ void Relation::addColumn(std::string attribute) {
     this->header.attributes.push_back(attribute);
 }
 
-Relation Relation::select(size_t index, std::string value) {
+Relation Relation::select(size_t& index, std::string value) {
     Relation r = Relation(this); // Make a new relation based on the current one (copies name and header)
     for (Tuple* t : this->tuples) {
         if (t->values[index] == value) {
@@ -27,7 +27,7 @@ Relation Relation::select(size_t index, std::string value) {
     return r;
 }
 
-Relation Relation::select(size_t index, size_t index2) {
+Relation Relation::select(size_t& index, size_t& index2) {
     Relation r = Relation(this); // Make a new relation based on the current one (copies name and header)
     for (Tuple* t : this->tuples) {
         if (t->values[index] == t->values[index2]) { // if those two spots are matching in the tuple
@@ -37,6 +37,20 @@ Relation Relation::select(size_t index, size_t index2) {
     return r;
 }
 
+Relation Relation::project(std::vector<size_t>& indices) {
+    Relation r = Relation(this->name);
+    for (size_t i : indices) {
+        r.addColumn(this->header.attributes[i]); // Add attributes to new Relation
+    }
+    for (Tuple* t : this->tuples) {
+        std::vector<std::string> v;
+        for (size_t i : indices) {
+            v.push_back(t->values[i]); // Store correct attribute values of tuple
+        }
+        r.tuples.insert(new Tuple(v)); // Add projected tuple to new relation
+    }
+    return r;
+}
 
 std::string Relation::toString() {
     std::string s = "";

@@ -1,9 +1,19 @@
 #include "Tuple.h"
 
+Tuple::Tuple() {
+
+}
+
+Tuple::Tuple(std::vector<std::string>& v) {
+    this->values = v;
+}
+
 
 bool Tuple::operator< (const Tuple & other) const {
     // compare this tuple to other tuple
-    return true;
+    if (this->values < other.values)
+        return true;
+    return false;
 }
 
 std::string Tuple::toString() {

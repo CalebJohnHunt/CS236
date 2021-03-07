@@ -28,9 +28,10 @@ void Interpreter::Interpret() {
         // select for each pair of matching variable in query
         selectVariables(r, q);
         // project using the positions of the variables in query
+        // projectVariables(r, q);
         // rename to match the names of variables in query
         // rpint the resulting relation
-        std::cout << "Query complete:\n" << r.toString() << std::endl;
+        std::cout << "Query complete:\n" << q.toString() << '\n' << r.toString() << std::endl;
     }
 }
 
@@ -42,7 +43,9 @@ Relation* Interpreter::evaluatePredicate(const Predicate &p) {
     return r;
 }
 
-// Helper functions to keep code clear
+/***************************************
+ * Helper functions to keep code clear *
+ ***************************************/
 
 Tuple* Interpreter::evaluateTuplePredicate(const Predicate &p) {
     Tuple* t = new Tuple();
@@ -52,6 +55,7 @@ Tuple* Interpreter::evaluateTuplePredicate(const Predicate &p) {
     return t;
 }
 
+// select for each constant in the query
 void Interpreter::selectConstants(Relation& r, Predicate& q) {
     for (size_t i = 0; i < q.parameters.size(); i++) {
         if (q.parameters[i]->type == Parameter::ParameterType::STRING) { // Select if parameter is constant (not variable)
@@ -60,6 +64,22 @@ void Interpreter::selectConstants(Relation& r, Predicate& q) {
     }
 }
 
-// void Interpreter::selectVariables(Relation& r, Predicate& q) {
-
-// }
+// select for each pair of matching variables in query
+void Interpreter::selectVariables(Relation& r, Predicate& q) {
+    // index through each parameter except the last one (cause it'll never have a matching variable)
+    for (size_t i = 0; i < q.parameters.size()-1; i++) {
+        // if this parameter is a variable
+        if (q.parameters[i]->type == Parameter::ParameterType::ID) {
+            // index through the remaining parameters (after the ith)
+            for (size_t j = i+1; j < q.parameters.size(); j++) {
+                // if this second parameter is a variable
+                if (q.parameters[j]->type == Parameter::ParameterType::ID) {
+                    // if the variables are the same
+                    if (q.parameters[i]->toString() == q.parameters[j]->toString()) {
+                        r = r.select(i, j);
+                    }
+                }
+            }
+        }
+    }
+}

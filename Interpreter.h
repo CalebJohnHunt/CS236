@@ -17,5 +17,7 @@ private:
     Tuple* evaluateTuplePredicate(const Predicate &p);
     void selectConstants(Relation&, Predicate&);
     void selectVariables(Relation&, Predicate&);
+    void projectVariabls(Relation&, Predicate&);
+    void renameVariabls (Relation&, Predicate&);
 
 };
