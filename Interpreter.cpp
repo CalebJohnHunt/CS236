@@ -28,9 +28,11 @@ void Interpreter::Interpret() {
         // select for each pair of matching variable in query
         selectVariables(r, q);
         // project using the positions of the variables in query
-        // projectVariables(r, q);
+        projectVariables(r, q);
         // rename to match the names of variables in query
-        // rpint the resulting relation
+        renameVariables(r, q);
+        // print the resulting relation
+        
         std::cout << "Query complete:\n" << q.toString() << '\n' << r.toString() << std::endl;
     }
 }
@@ -82,4 +84,29 @@ void Interpreter::selectVariables(Relation& r, Predicate& q) {
             }
         }
     }
+}
+
+void Interpreter::projectVariables(Relation& r, Predicate& q) {
+    std::vector<size_t> indices;
+    // Populate indices
+    for (size_t i = 0; i < q.parameters.size(); i++) {
+        // if this parameter is a variable
+        if (q.parameters[i]->type == Parameter::ParameterType::ID) {
+            // add it to the index list
+            indices.push_back(i);
+        }
+    }
+
+    // Project
+    r = r.project(indices);
+}
+
+void Interpreter::renameVariables(Relation& r, Predicate& q) {
+    std::vector<std::string> names;
+    for (Parameter* p : q.parameters) {
+        if (p->type == Parameter::ParameterType::ID) {
+            names.push_back(p->toString());
+        }
+    }
+    r = r.rename(names);
 }

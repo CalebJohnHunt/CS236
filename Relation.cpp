@@ -1,5 +1,7 @@
 #include "Relation.h"
 
+#include <iostream>
+
 // Constructor. Takes a name, init our header
 Relation::Relation(std::string name) {
     this->name = name;
@@ -49,6 +51,13 @@ Relation Relation::project(std::vector<size_t>& indices) {
         }
         r.tuples.insert(new Tuple(v)); // Add projected tuple to new relation
     }
+    return r;
+}
+
+Relation Relation::rename(std::vector<std::string>& names) {
+    Relation r = Relation(this->name);
+    r.header = Header(names);
+    r.tuples = this->tuples;
     return r;
 }
 

@@ -14,9 +14,9 @@ public:
     void addColumn(std::string attribute);
 
     Relation select(size_t& index, std::string value); // index and value (relation column and value to select)
-    Relation select(size_t& index, size_t& index2);     // index and index (relation columns to select on same values)
-    Relation project(std::vector<size_t>& indices);     // list of indices (the columns to keep)
-    Relation rename(std::vector<size_t>& indices);      // list of attributes (defines the new header)
+    Relation select(size_t& index, size_t& index2);    // index and index (relation columns to select on same values)
+    Relation project(std::vector<size_t>& indices);    // list of indices (the columns to keep)
+    Relation rename(std::vector<std::string>& names);  // list of attributes (defines the new header)
 
     Header header;    // S, N, A, P
     std::string name; // SNAP

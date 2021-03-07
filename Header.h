@@ -5,6 +5,8 @@
 
 class Header {
 public:
+    Header();
+    Header(std::vector<std::string>& attributes);
     std::vector<std::string> attributes;
 
     std::string toString();
