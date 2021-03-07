@@ -15,7 +15,7 @@ public:
     void AddParameter(Parameter*);
     std::string toString();
     std::vector<Parameter*> parameters;
+    std::string id;
 
 private:
-    std::string id;
 };
