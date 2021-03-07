@@ -132,6 +132,8 @@ std::vector<Predicate> Parser::ParseQueryList() {
         p.push_back(ParseQuery());
     }
     catch (const char* e) { // Must be lambda
+        if (strcmp(e, "?") == 0)
+            throw "?";
         return p;
     }
     std::vector<Predicate> l = ParseQueryList();
