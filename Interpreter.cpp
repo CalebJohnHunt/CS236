@@ -16,7 +16,7 @@ void Interpreter::Interpret() {
     // Each fact is a predicate, but we only care about its parameters, so don't turn it into a relation
     // Turn each one into a Tuple of its parameters. Then add the tuple to the relation (found in nameRelationMap)
     for (Predicate f : dataProg->facts) {
-        Tuple* t = evaluateTuplePredicate(f);
+        Tuple t = evaluateTuplePredicate(f);
         dataBase->nameRelationMap[f.id]->tuples.insert(t);
     }
 
@@ -32,8 +32,8 @@ void Interpreter::Interpret() {
         // rename to match the names of variables in query
         renameVariables(r, q);
         // print the resulting relation
-        
-        std::cout << "Query complete:\n" << q.toString() << '\n' << r.toString() << std::endl;
+        printQuery(r, q);
+        // std::cout << "Query complete:\n" << q.toString() << '\n' << r.toString() << std::endl;
     }
 }
 
@@ -49,10 +49,10 @@ Relation* Interpreter::evaluatePredicate(const Predicate &p) {
  * Helper functions to keep code clear *
  ***************************************/
 
-Tuple* Interpreter::evaluateTuplePredicate(const Predicate &p) {
-    Tuple* t = new Tuple();
+Tuple Interpreter::evaluateTuplePredicate(const Predicate &p) {
+    Tuple t = Tuple();
     for (Parameter* param : p.parameters) {
-        t->values.push_back(param->toString());
+        t.values.push_back(param->toString());
     }
     return t;
 }
@@ -109,4 +109,35 @@ void Interpreter::renameVariables(Relation& r, Predicate& q) {
         }
     }
     r = r.rename(names);
+}
+
+void Interpreter::printQuery(Relation& r, Predicate& q) {
+    std::cout << q.toString() << "? "; // SNAP('caleb', 1234, A, P)?
+    if (r.tuples.size() > 0) {
+        std::cout << "Yes(" << r.tuples.size() << ")\n"; // Yes(#)
+    } else {
+        std::cout << "No\n"; // No
+    }
+
+
+    for (Tuple t : r.tuples) {
+        if (t.values.size() == 0)
+            continue;
+        std::set<std::string> printedAttributes;
+        std::cout << "  ";
+        for (size_t i = 0; i < t.values.size(); i++) {
+            std::string attr = r.header.attributes[i];
+            if (printedAttributes.find(attr) == printedAttributes.end()) { // This is a new attribute
+                printedAttributes.insert(attr);
+                if (printedAttributes.size() > 1) { // This isn't the first attribute
+                    std::cout << ", ";
+                }
+                std::cout << attr << "=" << t.values[i];
+            }
+        }
+        // As long as we got an attribute to show
+        if (printedAttributes.size() != 0)
+            std::cout << '\n';
+    }
+
 }

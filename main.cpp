@@ -42,9 +42,9 @@ int main(int argc, char **argv) {
         // }
 
         Interpreter* i = new Interpreter(d);
-        i->Interpret();
+        i->Interpret(); // Also prints
 
-        std::cout << "**********\nDatabase:\n" << i->dataBase->toString() << "\n";
+        // std::cout << "**********\nDatabase:\n" << i->dataBase->toString() << "\n";
 
 
 

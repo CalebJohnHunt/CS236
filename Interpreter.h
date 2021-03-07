@@ -14,10 +14,11 @@ public:
 private:
 
     // Helper functions to keep code clear
-    Tuple* evaluateTuplePredicate(const Predicate &p);
+    Tuple evaluateTuplePredicate(const Predicate &p);
     void selectConstants (Relation&, Predicate&);
     void selectVariables (Relation&, Predicate&);
     void projectVariables(Relation&, Predicate&);
     void renameVariables (Relation&, Predicate&);
+    void printQuery      (Relation&, Predicate&);
 
 };
