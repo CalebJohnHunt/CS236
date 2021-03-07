@@ -1,8 +1,9 @@
 #include <iostream>
 #include <string>
 
-#include "Lexer.h"
-#include "Parser.h"
+#include "Lexer.h"       // lab 1
+#include "Parser.h"      // lab 2
+#include "Interpreter.h" // lab 3
 
 int main(int argc, char **argv) {
 
@@ -35,10 +36,15 @@ int main(int argc, char **argv) {
         DatalogProgram* d = p->Parse();
         
         // Print DatalogProgram Lab2
-        if (d != NULL) {
-            std::cout << "Success!\n"
-                      << d->toString();
-        }
+        // if (d != NULL) {
+        //     std::cout << "Success!\n"
+        //               << d->toString();
+        // }
+
+        Interpreter* i = new Interpreter(d);
+        i->Interpret();
+
+        std::cout << i->dataBase->toString() << "\n";
 
 
 
@@ -47,6 +53,7 @@ int main(int argc, char **argv) {
         delete l;
         delete p;
         delete d;
+        delete i;
     }
     else {
         std::cout << "No parameter given\n";
