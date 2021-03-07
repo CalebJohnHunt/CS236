@@ -11,9 +11,7 @@ Tuple::Tuple(std::vector<std::string>& v) {
 
 bool Tuple::operator< (const Tuple & other) const {
     // compare this tuple to other tuple
-    if (this->values < other.values)
-        return true;
-    return false;
+    return this->values < other.values;
 }
 
 std::string Tuple::toString() {

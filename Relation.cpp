@@ -21,8 +21,8 @@ void Relation::addColumn(std::string attribute) {
 
 Relation Relation::select(size_t& index, std::string value) {
     Relation r = Relation(this); // Make a new relation based on the current one (copies name and header)
-    for (Tuple* t : this->tuples) {
-        if (t->values[index] == value) {
+    for (Tuple t : this->tuples) {
+        if (t.values[index] == value) {
             r.tuples.insert(t);
         }
     }
@@ -31,8 +31,8 @@ Relation Relation::select(size_t& index, std::string value) {
 
 Relation Relation::select(size_t& index, size_t& index2) {
     Relation r = Relation(this); // Make a new relation based on the current one (copies name and header)
-    for (Tuple* t : this->tuples) {
-        if (t->values[index] == t->values[index2]) { // if those two spots are matching in the tuple
+    for (Tuple t : this->tuples) {
+        if (t.values[index] == t.values[index2]) { // if those two spots are matching in the tuple
             r.tuples.insert(t);
         }
     }
@@ -44,12 +44,12 @@ Relation Relation::project(std::vector<size_t>& indices) {
     for (size_t i : indices) {
         r.addColumn(this->header.attributes[i]); // Add attributes to new Relation
     }
-    for (Tuple* t : this->tuples) {
+    for (Tuple t : this->tuples) {
         std::vector<std::string> v;
         for (size_t i : indices) {
-            v.push_back(t->values[i]); // Store correct attribute values of tuple
+            v.push_back(t.values[i]); // Store correct attribute values of tuple
         }
-        r.tuples.insert(new Tuple(v)); // Add projected tuple to new relation
+        r.tuples.insert(Tuple(v)); // Add projected tuple to new relation
     }
     return r;
 }
@@ -65,8 +65,8 @@ std::string Relation::toString() {
     std::string s = "";
     s += this->name + ":\n";
     s += this->header.toString() + "\n";
-    for (Tuple* t : tuples) {
-        s += t->toString() + "\n";
+    for (Tuple t : tuples) {
+        s += t.toString() + "\n";
     }
     return s;
 }

@@ -20,7 +20,7 @@ public:
 
     Header header;    // S, N, A, P
     std::string name; // SNAP
-    std::set<Tuple*> tuples;
+    std::set<Tuple> tuples;
 
     std::string toString();
 
