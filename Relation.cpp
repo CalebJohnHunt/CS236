@@ -61,6 +61,23 @@ Relation Relation::rename(std::vector<std::string>& names) {
     return r;
 }
 
+Relation Relation::rUnion(Relation& o) {
+    Relation r = Relation(*this); // Make total copy, not just the name and header like in Relation(Relation*)
+    // std::cout << "Union called. Old relation:\n" << r.toString() << "\nNew Tuples added:\n";
+    for (Tuple t : o.tuples) {
+        r.tuples.insert(t);
+        // Print out the tuple if successful (testing)
+        // if (this->tuples.insert(t).second) {
+        //     std::cout << t.toString() << std::endl;
+        // }
+    }
+    return r;
+}
+
+Relation Relation::join(Relation& o) {
+    Relation r = Relation(*this);
+}
+
 std::string Relation::toString() {
     std::string s = "";
     s += this->name + ":\n";

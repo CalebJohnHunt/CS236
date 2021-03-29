@@ -20,6 +20,8 @@ void Interpreter::Interpret() {
         dataBase->nameRelationMap[f.id]->tuples.insert(t);
     }
 
+    // Evalutate rules
+
     // Evaluate queries
     for (Predicate q : dataProg->queries) {
         Relation r = *dataBase->nameRelationMap[q.id]; // get relation with same name as query
@@ -112,6 +114,7 @@ void Interpreter::renameVariables(Relation& r, Predicate& q) {
 }
 
 void Interpreter::printQuery(Relation& r, Predicate& q) {
+    std::cout << "Query Evaluation" << std::endl; // Only needed for proj 4
     std::cout << q.toString() << "? "; // SNAP('caleb', 1234, A, P)?
     if (r.tuples.size() > 0) {
         std::cout << "Yes(" << r.tuples.size() << ")\n"; // Yes(#)
