@@ -8,11 +8,11 @@
 class Rule {
 public:
     Rule(Predicate);
-    std::string toString();
+    std::string toString() const;
     void AddPredicate(Predicate);
 
-private:
     Predicate head;
     std::vector<Predicate> body;
+private:
 
 };

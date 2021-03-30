@@ -10,7 +10,7 @@ void Rule::AddPredicate(Predicate p) {
     body.push_back(p);
 }
 
-std::string Rule::toString() {
+std::string Rule::toString() const {
     std::string s = head.toString();
     s += " :- ";
     for (size_t i = 0; i < body.size(); i++) {
