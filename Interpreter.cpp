@@ -8,14 +8,14 @@ Interpreter::Interpreter(DatalogProgram* d) {
 void Interpreter::Interpret() {
     // Evaluate schemes
     // Each scheme is a predicate. Turn them into relations, and add them to the database
-    for (Predicate s : dataProg->schemes) {
+    for (const Predicate& s : dataProg->schemes) {
         dataBase->addRelation(evaluatePredicate(s));
     }
 
     // Evaluate facts
     // Each fact is a predicate, but we only care about its parameters, so don't turn it into a relation
     // Turn each one into a Tuple of its parameters. Then add the tuple to the relation (found in nameRelationMap)
-    for (Predicate f : dataProg->facts) {
+    for (const Predicate& f : dataProg->facts) {
         Tuple t = evaluateTuplePredicate(f);
         dataBase->nameRelationMap[f.id]->tuples.insert(t);
     }
@@ -23,7 +23,7 @@ void Interpreter::Interpret() {
     // Evalutate rules
 
     // Evaluate queries
-    for (Predicate q : dataProg->queries) {
+    for (const Predicate& q : dataProg->queries) {
         Relation r = *dataBase->nameRelationMap[q.id]; // get relation with same name as query
         // select for each constant in query
         selectConstants(r, q);
@@ -60,7 +60,7 @@ Tuple Interpreter::evaluateTuplePredicate(const Predicate &p) {
 }
 
 // select for each constant in the query
-void Interpreter::selectConstants(Relation& r, Predicate& q) {
+void Interpreter::selectConstants(Relation& r, const Predicate& q) {
     for (size_t i = 0; i < q.parameters.size(); i++) {
         if (q.parameters[i]->type == Parameter::ParameterType::STRING) { // Select if parameter is constant (not variable)
             r = r.select(i, q.parameters[i]->toString());
@@ -69,7 +69,7 @@ void Interpreter::selectConstants(Relation& r, Predicate& q) {
 }
 
 // select for each pair of matching variables in query
-void Interpreter::selectVariables(Relation& r, Predicate& q) {
+void Interpreter::selectVariables(Relation& r, const Predicate& q) {
     // index through each parameter except the last one (cause it'll never have a matching variable)
     for (size_t i = 0; i < q.parameters.size()-1; i++) {
         // if this parameter is a variable
@@ -88,7 +88,7 @@ void Interpreter::selectVariables(Relation& r, Predicate& q) {
     }
 }
 
-void Interpreter::projectVariables(Relation& r, Predicate& q) {
+void Interpreter::projectVariables(Relation& r, const Predicate& q) {
     std::vector<size_t> indices;
     // Populate indices
     for (size_t i = 0; i < q.parameters.size(); i++) {
@@ -103,7 +103,7 @@ void Interpreter::projectVariables(Relation& r, Predicate& q) {
     r = r.project(indices);
 }
 
-void Interpreter::renameVariables(Relation& r, Predicate& q) {
+void Interpreter::renameVariables(Relation& r, const Predicate& q) {
     std::vector<std::string> names;
     for (Parameter* p : q.parameters) {
         if (p->type == Parameter::ParameterType::ID) {
@@ -113,7 +113,7 @@ void Interpreter::renameVariables(Relation& r, Predicate& q) {
     r = r.rename(names);
 }
 
-void Interpreter::printQuery(Relation& r, Predicate& q) {
+void Interpreter::printQuery(Relation& r, const Predicate& q) {
     std::cout << "Query Evaluation" << std::endl; // Only needed for proj 4
     std::cout << q.toString() << "? "; // SNAP('caleb', 1234, A, P)?
     if (r.tuples.size() > 0) {

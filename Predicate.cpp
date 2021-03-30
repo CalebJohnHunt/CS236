@@ -18,7 +18,7 @@ void Predicate::AddParameter(Parameter* p) {
     parameters.push_back(p);
 }
 
-std::string Predicate::toString() {
+std::string Predicate::toString() const {
     std::stringstream ss;
     ss << this->id
        << "(";

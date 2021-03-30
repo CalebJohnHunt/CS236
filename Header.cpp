@@ -4,7 +4,7 @@ Header::Header() {
     
 }
 
-Header::Header(std::vector<std::string>& attributes) {
+Header::Header(const std::vector<std::string>& attributes) {
     this->attributes = attributes;
 }
 

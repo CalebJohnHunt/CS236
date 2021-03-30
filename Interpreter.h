@@ -15,10 +15,10 @@ private:
 
     // Helper functions to keep code clear
     Tuple evaluateTuplePredicate(const Predicate &p);
-    void selectConstants (Relation&, Predicate&);
-    void selectVariables (Relation&, Predicate&);
-    void projectVariables(Relation&, Predicate&);
-    void renameVariables (Relation&, Predicate&);
-    void printQuery      (Relation&, Predicate&);
+    void selectConstants (Relation&, const Predicate&);
+    void selectVariables (Relation&, const Predicate&);
+    void projectVariables(Relation&, const Predicate&);
+    void renameVariables (Relation&, const Predicate&);
+    void printQuery      (Relation&, const Predicate&);
 
 };

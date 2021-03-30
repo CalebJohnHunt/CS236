@@ -13,7 +13,7 @@ public:
     Predicate(std::string id = "");
     ~Predicate();
     void AddParameter(Parameter*);
-    std::string toString();
+    std::string toString() const;
     std::vector<Parameter*> parameters;
     std::string id;
 
