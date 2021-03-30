@@ -21,6 +21,42 @@ void Interpreter::Interpret() {
     }
 
     // Evalutate rules
+    for (const Rule& rule : dataProg->rules) {
+        // Evaluate queries
+
+        // Get the first predicate done, then we'll try to join it to the others
+        Predicate p = rule.body[0];
+        Relation r = *dataBase->nameRelationMap[p.id];
+        selectConstants(r, p);
+        selectVariables(r, p);
+        projectVariables(r, p);
+        renameVariables(r, p);
+        for (size_t i = 1; i < rule.body.size(); i++) {
+            p = rule.body[i];
+            Relation r_temp = *dataBase->nameRelationMap[p.id];
+            selectConstants(r_temp, p);
+            selectVariables(r_temp, p);
+            projectVariables(r_temp, p);
+            renameVariables(r_temp, p);
+            r = r.join(r_temp);
+        }
+        std::cout << "After joining: \n" << r.toString() << std::endl;
+        std::vector<size_t> projectionIndices;
+        // For each ID of the lefthand side
+        for (Parameter* p : rule.head.parameters) {
+            const std::string s = p->toString();
+            // Look through the headers of our joined relation
+            for (size_t i = 0; i < r.header.attributes.size(); i++) {
+                // When they match, add the index so we can project it later
+                if (s == r.header.attributes[i]) {
+                    projectionIndices.push_back(i);
+                    break;
+                }
+            }
+        }
+        r = r.project(projectionIndices);
+        std::cout << "Final relation:\n" << r.toString() << std::endl;
+    }
 
     // Evaluate queries
     for (const Predicate& q : dataProg->queries) {
@@ -42,7 +78,9 @@ void Interpreter::Interpret() {
 Relation* Interpreter::evaluatePredicate(const Predicate &p) {
     Relation* r = new Relation(p.id); // New relation with predicate id as its name
     for (Parameter* param : p.parameters) {
-        r->addColumn(param->toString()); // param->toString() just returns its name anyway, but its name is private
+        // Only add the ID's. This is always true for schemes, but not always for rules
+        if (param->type == Parameter::ID)
+            r->addColumn(param->toString()); // param->toString() just returns its name anyway, but its name is private
     }
     return r;
 }

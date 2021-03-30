@@ -110,12 +110,16 @@ Relation Relation::join(const Relation& o) {
     // Go through every pair of tuples
     for (const Tuple& rt : this->tuples) {
         for (const Tuple& ot : o.tuples) {
+            Tuple ct;
             if (isJoinable(rt, ot, sharedAttributesIndices)) {
-                Tuple ct = combineTuples(rt, ot, sharedAttributesIndices);
-                r.tuples.insert(ct);
-                // std::cout << "Combining: " << rt.toString() << " | " << ot.toString() << std::endl;
-                // std::cout << "Combined tuple: " << ct.toString() << std::endl;
+                ct = combineTuples(rt, ot, sharedAttributesIndices);
+            } else {
+                // Give it an empty sharedAttributesIndices, and it will just union them
+                ct = combineTuples(rt, ct, std::vector<std::pair<size_t, size_t>>());
             }
+            // std::cout << "Tried to combine: " << rt.toString() << " | " << ot.toString() << std::endl;
+            // std::cout << "Ended up: " << ct.toString() << std::endl;
+            r.tuples.insert(ct);
         }
     }
 
@@ -142,6 +146,10 @@ Header Relation::combineHeaders(const Header& h, const Header& o) {
 }
 
 bool Relation::isJoinable(const Tuple& t, const Tuple& o, const std::vector<std::pair<size_t, size_t>>& sharedAttributesIndices) {
+    /*
+     * Check if for each sharedAttribute, the two Tuples have the same value
+     * ex: checking [0]: [2,4,5] + [3,4,5] => false
+     */
     // std::cout << "isJoinable?\n" << t.toString() << "+ " << o.toString() << std::endl;
     for (const std::pair<size_t, size_t>& p : sharedAttributesIndices) {
         if (t.values[p.first] != o.values[p.second]) {
