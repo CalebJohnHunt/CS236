@@ -17,8 +17,9 @@ public:
     Relation select(const size_t& index, const size_t& index2);    // index and index (relation columns to select on same values)
     Relation project(const std::vector<size_t>& indices);          // list of indices (the columns to keep)
     Relation rename(const std::vector<std::string>& names);        // list of attributes (defines the new header)
-    Relation rUnion(const Relation& r);                            // Relation $\cup$ r
+    void rUnion(const Relation& r);                                // Relation $\cup$ r
     Relation join(const Relation& r);                              // Relation |x| r
+    void subtract(const Relation& r);                              // this-r
 
     Header header;    // S, N, A, P
     std::string name; // SNAP

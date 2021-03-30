@@ -21,47 +21,64 @@ void Interpreter::Interpret() {
     }
 
     // Evalutate rules
-    for (const Rule& rule : dataProg->rules) {
-        // Evaluate queries
+    std::cout << "Rule evaluation" << std::endl;
+    // Variable to keep track of if anything changed
+    bool tuplesAdded = true;
 
-        // Get the first predicate done, then we'll try to join it to the others
-        Predicate p = rule.body[0];
-        Relation r = *dataBase->nameRelationMap[p.id];
-        selectConstants(r, p);
-        selectVariables(r, p);
-        projectVariables(r, p);
-        renameVariables(r, p);
-        for (size_t i = 1; i < rule.body.size(); i++) {
-            // std::cout << "Join " << i << ":" << std::endl << r.toString();
-            p = rule.body[i];
-            Relation r_temp = *dataBase->nameRelationMap[p.id];
-            // std::cout << "Relation before selects/project/rename: \n" << r_temp.toString() << std::endl;
-            selectConstants(r_temp, p);
-            selectVariables(r_temp, p);
-            projectVariables(r_temp, p);
-            renameVariables(r_temp, p);
-            r = r.join(r_temp);
-        }
-        // std::cout << "After joining: \n" << r.toString() << std::endl;
-        std::vector<size_t> projectionIndices;
-        // For each ID of the lefthand side
-        for (Parameter* p : rule.head.parameters) {
-            const std::string s = p->toString();
-            // Look through the headers of our joined relation
-            for (size_t i = 0; i < r.header.attributes.size(); i++) {
-                // When they match, add the index so we can project it later
-                if (s == r.header.attributes[i]) {
-                    projectionIndices.push_back(i);
-                    break;
+    while (tuplesAdded) {
+        tuplesAdded = false;
+        for (const Rule& rule : dataProg->rules) {
+            std::cout << rule.toString() << std::endl;
+
+            // Get the first predicate done, then we'll try to join it to the others
+            Predicate p = rule.body[0];
+            Relation r = *dataBase->nameRelationMap[p.id];
+            selectConstants(r, p);
+            selectVariables(r, p);
+            projectVariables(r, p);
+            renameVariables(r, p);
+            for (size_t i = 1; i < rule.body.size(); i++) {
+                // std::cout << "Join " << i << ":" << std::endl << r.toString();
+                p = rule.body[i];
+                Relation r_temp = *dataBase->nameRelationMap[p.id];
+                // std::cout << "Relation before selects/project/rename: \n" << r_temp.toString() << std::endl;
+                selectConstants(r_temp, p);
+                selectVariables(r_temp, p);
+                projectVariables(r_temp, p);
+                renameVariables(r_temp, p);
+                r = r.join(r_temp);
+            }
+            std::vector<size_t> projectionIndices;
+            // For each ID of the lefthand side
+            for (Parameter* p : rule.head.parameters) {
+                const std::string s = p->toString();
+                // Look through the headers of our joined relation
+                for (size_t i = 0; i < r.header.attributes.size(); i++) {
+                    // When they match, add the index so we can project it later
+                    if (s == r.header.attributes[i]) {
+                        projectionIndices.push_back(i);
+                        break;
+                    }
                 }
             }
-        }
 
-        // Step 3: Project headings
-        r = r.project(projectionIndices);
-        // Step 4: Rename headings
-        r = r.rename(dataBase->nameRelationMap[rule.head.id]->header.attributes);
-        std::cout << "Final relation:\n" << r.toString() << std::endl;
+            // Step 3: Project headings
+            r = r.project(projectionIndices);
+            // Step 4: Rename headings
+            Relation* dataBaseRelation = dataBase->nameRelationMap[rule.head.id];
+            r = r.rename(dataBaseRelation->header.attributes);
+            // Remove any duplicates we already know about
+            r.subtract(*dataBaseRelation);
+            // Print out all the new tuples we got
+            std::cout << r.toString() << std::endl;
+            // Step 5: Union with old dataBase relation
+            size_t tuplesBeforeUnion = dataBaseRelation->tuples.size();
+            dataBaseRelation->rUnion(r);
+            if (dataBaseRelation->tuples.size() != tuplesBeforeUnion) {
+                tuplesAdded = true;
+            }
+            // std::cout << "Final relation:\n" << dataBaseRelation->toString() << std::endl;
+        }
     }
 
     // Evaluate queries
@@ -186,5 +203,4 @@ void Interpreter::printQuery(Relation& r, const Predicate& q) {
         if (printedAttributes.size() != 0)
             std::cout << '\n';
     }
-
 }

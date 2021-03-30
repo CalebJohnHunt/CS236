@@ -62,17 +62,17 @@ Relation Relation::rename(const std::vector<std::string>& names) {
     return r;
 }
 
-Relation Relation::rUnion(const Relation& o) {
-    Relation r = Relation(*this); // Make total copy, not just the name and header like in Relation(Relation*)
+void Relation::rUnion(const Relation& o) {
+    //Relation r = Relation(*this); // Make total copy, not just the name and header like in Relation(Relation*)
     // std::cout << "Union called. Old relation:\n" << r.toString() << "\nNew Tuples added:\n";
     for (const Tuple& t : o.tuples) {
-        r.tuples.insert(t);
+        this->tuples.insert(t);
         // Print out the tuple if successful (testing)
         // if (this->tuples.insert(t).second) {
         //     std::cout << t.toString() << std::endl;
         // }
     }
-    return r;
+    // return r;
 }
 
 Relation Relation::join(const Relation& o) {
@@ -81,10 +81,8 @@ Relation Relation::join(const Relation& o) {
     // std::cout << "\njoining\n" << this->toString() << std::endl << o.toString() << std::endl;
 
     // combine the headers (this headers go before other headers)
-    // std::cout << "combineHeaders test" << std::endl;
     Header h = combineHeaders(this->header, o.header);
     r.header = h;
-    // std::cout << h.toString() << std::endl;
 
     // Find all shared attributes
     std::vector<std::pair<size_t, size_t>> sharedAttributesIndices;
@@ -98,14 +96,6 @@ Relation Relation::join(const Relation& o) {
         }
     }
 
-    // std::cout << "Original headers:\n" << this->header.toString() << '\n' << o.header.toString() << std::endl;
-    // std::cout << "Combined header:\n"  << h.toString() << std::endl;
-    // std::cout << "Combined indices:\n";
-    // for (const std::pair<size_t, size_t>& p : sharedAttributesIndices) {
-    //     std::cout << p.first << ' ' << p.second << std::endl;
-    // }
-
-
     // combine tuples
     // Go through every pair of tuples
     for (const Tuple& rt : this->tuples) {
@@ -113,18 +103,25 @@ Relation Relation::join(const Relation& o) {
             Tuple ct;
             if (isJoinable(rt, ot, sharedAttributesIndices)) {
                 ct = combineTuples(rt, ot, sharedAttributesIndices);
+                r.tuples.insert(ct);
             } else {
                 // Give it an empty sharedAttributesIndices, and it will just union them
-                ct = combineTuples(rt, ct, std::vector<std::pair<size_t, size_t>>());
+                // ct = combineTuples(rt, ct, std::vector<std::pair<size_t, size_t>>());
+                continue;
             }
             // std::cout << "Tried to combine: " << rt.toString() << " | " << ot.toString() << std::endl;
             // std::cout << "Ended up: " << ct.toString() << std::endl;
-            r.tuples.insert(ct);
         }
     }
-
     return r;
+}
 
+// Set subtraction. Loop through every tuple in r,
+// and try to subtract it from this
+void Relation::subtract(const Relation& r) {
+    for (Tuple t : r.tuples) {
+        this->tuples.erase(t);
+    }
 }
 
 Header Relation::combineHeaders(const Header& h, const Header& o) {
