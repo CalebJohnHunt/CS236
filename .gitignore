@@ -1,0 +1,9 @@
+.vscode/
+TestIOs/
+Lab*PassOffCases/
+turn_in/
+
+makefile*
+*.txt
+lab*
+test*
