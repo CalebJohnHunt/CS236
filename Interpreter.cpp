@@ -32,15 +32,17 @@ void Interpreter::Interpret() {
         projectVariables(r, p);
         renameVariables(r, p);
         for (size_t i = 1; i < rule.body.size(); i++) {
+            // std::cout << "Join " << i << ":" << std::endl << r.toString();
             p = rule.body[i];
             Relation r_temp = *dataBase->nameRelationMap[p.id];
+            // std::cout << "Relation before selects/project/rename: \n" << r_temp.toString() << std::endl;
             selectConstants(r_temp, p);
             selectVariables(r_temp, p);
             projectVariables(r_temp, p);
             renameVariables(r_temp, p);
             r = r.join(r_temp);
         }
-        std::cout << "After joining: \n" << r.toString() << std::endl;
+        // std::cout << "After joining: \n" << r.toString() << std::endl;
         std::vector<size_t> projectionIndices;
         // For each ID of the lefthand side
         for (Parameter* p : rule.head.parameters) {

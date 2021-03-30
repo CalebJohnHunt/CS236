@@ -78,7 +78,7 @@ Relation Relation::rUnion(const Relation& o) {
 Relation Relation::join(const Relation& o) {
     Relation r = Relation(this);
 
-    // std::cout << "\njoin testing\n" << std::endl;
+    // std::cout << "\njoining\n" << this->toString() << std::endl << o.toString() << std::endl;
 
     // combine the headers (this headers go before other headers)
     // std::cout << "combineHeaders test" << std::endl;
@@ -194,7 +194,7 @@ Tuple Relation::combineTuples(const Tuple& t, const Tuple& o, const std::vector<
 }
 
 
-std::string Relation::toString() {
+std::string Relation::toString() const {
     std::string s = "";
     s += this->name + ":\n";
     s += this->header.toString() + "\n";

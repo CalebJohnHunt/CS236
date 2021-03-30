@@ -24,7 +24,7 @@ public:
     std::string name; // SNAP
     std::set<Tuple> tuples;
 
-    std::string toString();
+    std::string toString() const;
 
 private:
     // join helper functions
