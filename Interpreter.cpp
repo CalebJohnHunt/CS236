@@ -56,7 +56,11 @@ void Interpreter::Interpret() {
                 }
             }
         }
+
+        // Step 3: Project headings
         r = r.project(projectionIndices);
+        // Step 4: Rename headings
+        r = r.rename(dataBase->nameRelationMap[rule.head.id]->header.attributes);
         std::cout << "Final relation:\n" << r.toString() << std::endl;
     }
 
@@ -80,7 +84,7 @@ void Interpreter::Interpret() {
 Relation* Interpreter::evaluatePredicate(const Predicate &p) {
     Relation* r = new Relation(p.id); // New relation with predicate id as its name
     for (Parameter* param : p.parameters) {
-        // Only add the ID's. This is always true for schemes, but not always for rules
+        // Only add the ID's. This is trivial for schemes, but not always for rules
         if (param->type == Parameter::ID)
             r->addColumn(param->toString()); // param->toString() just returns its name anyway, but its name is private
     }
