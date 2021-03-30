@@ -76,23 +76,45 @@ Relation Relation::rUnion(const Relation& o) {
 }
 
 Relation Relation::join(const Relation& o) {
-    Relation r = Relation(*this);
+    Relation r = Relation(this);
 
-    std::cout << "\njoin testing\n" << std::endl;
+    // std::cout << "\njoin testing\n" << std::endl;
 
     // combine the headers (this headers go before other headers)
-    std::cout << "combineHeaders test" << std::endl;
-    Header h = combineHeaders(r.header, o.header);
+    // std::cout << "combineHeaders test" << std::endl;
+    Header h = combineHeaders(this->header, o.header);
     r.header = h;
-    std::cout << h.toString() << std::endl;
+    // std::cout << h.toString() << std::endl;
+
+    // Find all shared attributes
+    std::vector<std::pair<size_t, size_t>> sharedAttributesIndices;
+    for (size_t i = 0; i < this->header.attributes.size(); i++) {
+        for (size_t j = 0; j < o.header.attributes.size(); j++) {
+            // We've found a matching attribute. Store the indices for joining later
+            if (this->header.attributes[i] == o.header.attributes[j]) {
+                sharedAttributesIndices.push_back(std::pair<size_t, size_t>(i, j));
+                continue;
+            }
+        }
+    }
+
+    // std::cout << "Original headers:\n" << this->header.toString() << '\n' << o.header.toString() << std::endl;
+    // std::cout << "Combined header:\n"  << h.toString() << std::endl;
+    // std::cout << "Combined indices:\n";
+    // for (const std::pair<size_t, size_t>& p : sharedAttributesIndices) {
+    //     std::cout << p.first << ' ' << p.second << std::endl;
+    // }
+
 
     // combine tuples
     // Go through every pair of tuples
-    for (const Tuple& rt : r.tuples) {
+    for (const Tuple& rt : this->tuples) {
         for (const Tuple& ot : o.tuples) {
-            if (isJoinable(rt, ot)) {
-                Tuple ct = combineTuples(rt, ot);
+            if (isJoinable(rt, ot, sharedAttributesIndices)) {
+                Tuple ct = combineTuples(rt, ot, sharedAttributesIndices);
                 r.tuples.insert(ct);
+                // std::cout << "Combining: " << rt.toString() << " | " << ot.toString() << std::endl;
+                // std::cout << "Combined tuple: " << ct.toString() << std::endl;
             }
         }
     }
@@ -119,12 +141,48 @@ Header Relation::combineHeaders(const Header& h, const Header& o) {
     return Header(combinedAttributes);
 }
 
-bool Relation::isJoinable(const Tuple& t, const Tuple& o) {
+bool Relation::isJoinable(const Tuple& t, const Tuple& o, const std::vector<std::pair<size_t, size_t>>& sharedAttributesIndices) {
+    // std::cout << "isJoinable?\n" << t.toString() << "+ " << o.toString() << std::endl;
+    for (const std::pair<size_t, size_t>& p : sharedAttributesIndices) {
+        if (t.values[p.first] != o.values[p.second]) {
+            // std::cout << "Not joinable" << std::endl;
+            return false;
+        }
+    }
+    // std::cout << "Joinable!" << std::endl;
     return true;
 }
 
-Tuple Relation::combineTuples(const Tuple& t, const Tuple& o) {
-    return t;
+Tuple Relation::combineTuples(const Tuple& t, const Tuple& o, const std::vector<std::pair<size_t, size_t>>& sharedAttributesIndices) {
+    /*
+     * Takes in two tuples. Returns the second appeneded to the first
+     * but with shared attributes only appearing once (as part of the first tuple)
+     * e.g. [1,2,3,4] + [a,4,b,c] -> [1,2,3,4,a,b,c]
+     */
+    
+    Tuple newTuple;
+    // All of the values from the first tuple go in in order
+    for (const std::string& s : t.values) {
+        newTuple.values.push_back(s);
+    }
+    // Then we add on the values from the other tuple (unless they're the shared ones)
+    for (size_t i = 0; i < o.values.size(); i++) {
+        // Make sure to not append the shared attributes again
+        bool uniqueAttribute = true;
+        for (const std::pair<size_t, size_t>& p : sharedAttributesIndices) {
+            // This index is one of the shared ones. Skip it.
+            if (i == p.second) {
+                uniqueAttribute = false;
+                break;
+            }
+        }
+        if (!uniqueAttribute) {
+            continue;
+        }
+
+        newTuple.values.push_back(o.values[i]);
+    }
+    return newTuple;
 }
 
 

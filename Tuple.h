@@ -11,7 +11,7 @@ public:
     std::vector<std::string> values;
     bool operator< (const Tuple & other) const;
 
-    std::string toString();
+    std::string toString() const;
 
 private:
 

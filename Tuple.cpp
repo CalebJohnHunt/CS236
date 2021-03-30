@@ -14,7 +14,7 @@ bool Tuple::operator< (const Tuple & other) const {
     return this->values < other.values;
 }
 
-std::string Tuple::toString() {
+std::string Tuple::toString() const {
     std::string s = "";
     for (std::string str : values) {
         s += str + " ";

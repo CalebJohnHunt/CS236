@@ -9,7 +9,7 @@ public:
     Header(const std::vector<std::string>& attributes);
     std::vector<std::string> attributes;
 
-    std::string toString();
+    std::string toString() const;
 
 private:
 
