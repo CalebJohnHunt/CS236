@@ -1,8 +1,6 @@
 # CS236-Lab
 
-
-
-Based on regular expressions (not regex, but the mathematical regular expressions) and finite state automata.
+Exploring languages - Regular expressions, context-free grammar.
 
 ---
 
